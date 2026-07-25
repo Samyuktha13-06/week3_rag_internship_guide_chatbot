@@ -11,9 +11,16 @@ def get_embedding_model():
     """
     Return the embedding model used for vector generation.
     """
-
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
-    )
+    try:
+        # Attempt to load from the local cache first to avoid network calls and SSL issues
+        embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_kwargs={"local_files_only": True}
+        )
+    except Exception:
+        # Fallback to online loading if the model is not found in the local cache
+        embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2"
+        )
 
     return embeddings
